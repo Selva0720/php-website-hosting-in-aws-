@@ -1,0 +1,79 @@
+php website hosting and  RDS MySQL connection
+ 
+before that we need to install php,mysql,apache.
+
+Install Apache:
+
+sudo yum update -y
+sudo yum install httpd -y
+Start and enable Apache:
+
+sudo systemctl start httpd
+sudo systemctl enable httpd
+
+
+Install PHP and Extensions:
+sudo amazon-linux-extras enable php8.0
+sudo yum install php php-mysqlnd php-json php-curl php-mbstring php-xml -y
+
+install MySQL using Amazon's repository:
+sudo yum install mysql-server -y
+sudo systemctl start mysqld
+sudo systemctl enable mysqld
+sudo systemctl status mysqld
+
+
+1.open FileZilla share your file your to local site to remote site or you can clone form GitHub
+
+2.unzip your file and move file to /var/www/html/
+
+3.And  configure .php to rds database ===>important
+
+   example:sudo nano configure.php .it will go editer
+
+    like this need to configure
+==========================================================================================================    
+    <?php
+    // RDS connection details
+    $db_host = 'phpweb.cr2egcgm6z8l.us-east-1.rds.amazonaws.com';  // RDS Endpoint
+    $db_user = 'admin';                                              // RDS Username
+    $db_pass = 'Admin#123';                                          // RDS Password
+    $db_name = 'php_cms';                                             // Your Database Name
+
+    // Establish connection
+    $conn = mysqli_connect($db_host, $db_user, $db_pass, $db_name);
+
+    // Check connection
+    if (!$conn) {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+?>
+ ------------------------------------------------------------------------------------------------------------
+like this you need to assign.
+
+4.Import Database to RDS
+  
+       mysql -h enter your rds endpoint-u admin -p
+ Enter Password:
+
+CREATE DATABASE yourdatabasename;
+
+then exit
+
+import your file in our website instance=>mysql -h your rdsendpoint -u admin -p yourname < /var/www/html/yourdblocation
+
+then restart APACHE =>sudo systemctl restart httpd =>both website and rds are connected
+
+
+if you face any error copy this cmd ==>sudo tail -f /var/log/httpd/error_log  it will show error log and that paste error to chatgpt it wiil give solution.
+
+5.View the Database===>SHOW DATABASES;
+Select and Use a Specific Database==>USE yourdb;
+Then list the tables in the database:===>SHOW TABLES;
+Query Data==>SELECT * FROM table_name LIMIT 10; (your wish).
+
+you able to see website database.
+
+
+
+
